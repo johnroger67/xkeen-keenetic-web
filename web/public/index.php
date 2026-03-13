@@ -71,11 +71,8 @@ function removeFile(string $filename): bool
 
 function xkeenServiceStatus(): array
 {
-  $output = null;
-  exec('xkeen -status 2>&1', $output);
-  $output = $output ?? [];
-  $clean = array_map(fn($line) => preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', $line), $output);
-  $running = !empty(array_filter($clean, fn($line) => str_contains($line, 'Прокси-клиент запущен')));
+  exec('pidof xray', $output, $retval);
+  $running = $retval === 0;
   return array('service' => $running, 'status' => 0);
 }
 
@@ -92,30 +89,17 @@ function xkeenServiceAction(string $action): array
     return array('output' => $output ?: ['Прокси-клиент остановлен'], 'status' => 0);
   }
 
-  $successMarker = 'Прокси-клиент запущен';
-  $failureMarker = 'Failed to start';
   $result = 'timeout';
 
   for ($i = 0; $i < 10; $i++) {
     sleep(1);
-    $raw = file_exists($logFile) ? file_get_contents($logFile) : '';
-    $content = preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', $raw);
-    if (str_contains($content, $successMarker)) { $result = 'success'; break; }
-    if (str_contains($content, $failureMarker)) { $result = 'failure'; break; }
+    exec('pidof xray', $pidOutput, $retval);
+    if ($retval === 0) { $result = 'success'; break; }
   }
 
-  $lines = explode("\n", preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', file_exists($logFile) ? file_get_contents($logFile) : ''));
-
-  if ($result === 'success') {
-    $output = [];
-    foreach ($lines as $line) {
-      if (trim($line) === '') continue;
-      $output[] = $line;
-      if (str_contains($line, $successMarker)) break;
-    }
-  } else {
-    $output = array_values(array_filter($lines, 'trim'));
-  }
+  $raw = file_exists($logFile) ? file_get_contents($logFile) : '';
+  $lines = explode("\n", preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', $raw));
+  $output = array_values(array_filter($lines, 'trim'));
 
   return array('output' => $output, 'status' => $result === 'success' ? 0 : 1);
 }
