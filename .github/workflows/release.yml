@@ -54,6 +54,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   build-openwrt:
+    if: false  # disabled until OpenWRT secrets are configured
     runs-on: ubuntu-22.04
     needs: [build-web]
 
@@ -165,7 +166,7 @@ jobs:
 
   build-repository:
     runs-on: ubuntu-22.04
-    needs: [build-openwrt, build-entware]
+    needs: [build-entware]
 
     steps:
     - name: Checkout
@@ -186,22 +187,11 @@ jobs:
       run: ls ./out
 
     - name: Build repository
-      run: make repository
+      run: make repo-multi _repo-index
 
-    - name: Create openwrt keys
-      env:
-        OPENWRT_PUBLIC_KEY: ${{ secrets.OPENWRT_PUBLIC_KEY }}
-        OPENWRT_APK_PUBLIC_KEY: ${{ secrets.OPENWRT_APK_PUBLIC_KEY }}
-      run: |
-        echo "$OPENWRT_PUBLIC_KEY" > ./out/_pages/openwrt/xkeen-keenetic-web.pub
-        echo "$OPENWRT_APK_PUBLIC_KEY" > ./out/_pages/openwrt/xkeen-keenetic-web.pem
-
-    - name: Copy openwrt indexes
-      run: |
-        cp ./out/Packages ./out/_pages/openwrt/Packages
-        cp ./out/Packages.gz ./out/_pages/openwrt/Packages.gz
-        cp ./out/Packages.sig ./out/_pages/openwrt/Packages.sig
-        cp ./out/packages.adb ./out/_pages/openwrt/packages.adb
+    # OpenWRT steps disabled (build-openwrt job is disabled):
+    # - Create openwrt keys
+    # - Copy openwrt indexes
 
     - name: Upload pages artifact
       uses: actions/upload-pages-artifact@v3
@@ -273,25 +263,9 @@ jobs:
         asset_name: xkeen-keenetic-web_${{ steps.version.outputs.content }}_all_entware.ipk
         asset_content_type: application/octet-stream
 
-    - name: Upload Release web-openwrt ipk
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./out/openwrt/xkeen-keenetic-web_${{ steps.version.outputs.content }}_all.ipk
-        asset_name: xkeen-keenetic-web_${{ steps.version.outputs.content }}_all_openwrt.ipk
-        asset_content_type: application/octet-stream
-
-    - name: Upload Release web-openwrt apk
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./out/openwrt/xkeen-keenetic-web-${{ steps.version.outputs.content }}.apk
-        asset_name: xkeen-keenetic-web_${{ steps.version.outputs.content }}_all_openwrt.apk
-        asset_content_type: application/octet-stream
+    # OpenWRT release assets disabled (build-openwrt job is disabled):
+    # - Upload Release web-openwrt ipk
+    # - Upload Release web-openwrt apk
 
     - name: Summary
       run: |
