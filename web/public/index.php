@@ -84,7 +84,8 @@ function xkeenServiceAction(string $action): array
 
   if ($action === 'stop') {
     sleep(2);
-    $content = file_exists($logFile) ? file_get_contents($logFile) : '';
+    $raw = file_exists($logFile) ? file_get_contents($logFile) : '';
+    $content = preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', $raw);
     $output = array_values(array_filter(explode("\n", $content), 'trim'));
     return array('output' => $output ?: ['Прокси-клиент остановлен'], 'status' => 0);
   }
