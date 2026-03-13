@@ -193,8 +193,8 @@ jobs:
         OPENWRT_PUBLIC_KEY: ${{ secrets.OPENWRT_PUBLIC_KEY }}
         OPENWRT_APK_PUBLIC_KEY: ${{ secrets.OPENWRT_APK_PUBLIC_KEY }}
       run: |
-        echo "$OPENWRT_PUBLIC_KEY" > ./out/_pages/openwrt/nfqws-keenetic-web.pub
-        echo "$OPENWRT_APK_PUBLIC_KEY" > ./out/_pages/openwrt/nfqws-keenetic-web.pem
+        echo "$OPENWRT_PUBLIC_KEY" > ./out/_pages/openwrt/xkeen-keenetic-web.pub
+        echo "$OPENWRT_APK_PUBLIC_KEY" > ./out/_pages/openwrt/xkeen-keenetic-web.pem
 
     - name: Copy openwrt indexes
       run: |
@@ -269,8 +269,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./out/entware/nfqws-keenetic-web_${{ steps.version.outputs.content }}_all_entware.ipk
-        asset_name: nfqws-keenetic-web_${{ steps.version.outputs.content }}_all_entware.ipk
+        asset_path: ./out/entware/xkeen-keenetic-web_${{ steps.version.outputs.content }}_all_entware.ipk
+        asset_name: xkeen-keenetic-web_${{ steps.version.outputs.content }}_all_entware.ipk
         asset_content_type: application/octet-stream
 
     - name: Upload Release web-openwrt ipk
@@ -279,8 +279,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./out/openwrt/nfqws-keenetic-web_${{ steps.version.outputs.content }}_all.ipk
-        asset_name: nfqws-keenetic-web_${{ steps.version.outputs.content }}_all_openwrt.ipk
+        asset_path: ./out/openwrt/xkeen-keenetic-web_${{ steps.version.outputs.content }}_all.ipk
+        asset_name: xkeen-keenetic-web_${{ steps.version.outputs.content }}_all_openwrt.ipk
         asset_content_type: application/octet-stream
 
     - name: Upload Release web-openwrt apk
@@ -289,8 +289,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./out/openwrt/nfqws-keenetic-web-${{ steps.version.outputs.content }}.apk
-        asset_name: nfqws-keenetic-web_${{ steps.version.outputs.content }}_all_openwrt.apk
+        asset_path: ./out/openwrt/xkeen-keenetic-web-${{ steps.version.outputs.content }}.apk
+        asset_name: xkeen-keenetic-web_${{ steps.version.outputs.content }}_all_openwrt.apk
         asset_content_type: application/octet-stream
 
     - name: Summary
