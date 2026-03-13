@@ -5,6 +5,8 @@
 
 Веб-интерфейс для управления конфигурацией [`xkeen`](https://github.com/Corvus-Malus/XKeen) на маршрутизаторах Keenetic с Entware.
 
+Основан на [nfqws-keenetic-web](https://github.com/nfqws/nfqws-keenetic-web).
+
 ### Установка на Keenetic и другие системы с Entware
 
 1. Установите необходимые зависимости
