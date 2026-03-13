@@ -15,6 +15,7 @@
     "pretty": "prettier --write \"./src/**/*.{ts,tsx,js,jsx,scss}\""
   },
   "dependencies": {
+    "@codemirror/lang-json": "^6.0.2",
     "@codemirror/legacy-modes": "^6.5.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",

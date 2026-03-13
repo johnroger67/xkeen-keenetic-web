@@ -1,31 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { history, undo } from '@codemirror/commands';
-import { StreamLanguage } from '@codemirror/language';
-import { lua } from '@codemirror/legacy-modes/mode/lua';
+import { json } from '@codemirror/lang-json';
 import { Compartment } from '@codemirror/state';
 import { keymap, type EditorView } from '@codemirror/view';
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import UndoIcon from '@mui/icons-material/Undo';
 import { Box, IconButton, Tooltip, useTheme } from '@mui/material';
 import { type SxProps } from '@mui/system/styleFunctionSx';
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import ReactCodeMirror from '@uiw/react-codemirror';
 
-import type { FilenamesRequest } from '@/api/schema';
-
 import { useTranslation } from '@/hooks/useTranslation';
-
-import { codeMirrorLangLog } from '@/utils/codeMirrorLangLog';
-import {
-  codeMirrorLangNfqws,
-  codeMirrorLangNfqwsArgs,
-} from '@/utils/codeMirrorLangNfqws';
-import { codeMirrorLangList } from '@/utils/codeMirrorLangList';
 
 const historyCompartment = new Compartment();
 
 interface EditorProps {
-  type: FilenamesRequest['type'] | 'lua' | 'arg';
+  type: 'json';
   value: string;
   onChange?: (value: string, changed: boolean) => void;
   onSave?: () => void;
@@ -69,62 +58,12 @@ export const Editor = ({
         ]),
       );
     }
-    if (type === 'conf') {
-      result.push(codeMirrorLangNfqws());
-    } else if (type === 'arg') {
-      result.push(codeMirrorLangNfqwsArgs());
-    } else if (type === 'list') {
-      result.push(codeMirrorLangList());
-    } else if (type === 'log') {
-      result.push(codeMirrorLangLog());
-    } else if (type === 'lua') {
-      result.push(StreamLanguage.define(lua));
+    if (type === 'json') {
+      result.push(json());
     }
 
     return result;
   }, [type, onSave]);
-
-  const handleMagicButton = useCallback(() => {
-    if (!editorView) {
-      return;
-    }
-
-    const text = editorView.state.doc.toString();
-    const lines = text.split('\n');
-
-    const seen = new Set<string>();
-    const result: string[] = [];
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-
-      if (
-        trimmed.length === 0 ||
-        trimmed.startsWith('#') ||
-        trimmed.startsWith('//')
-      ) {
-        result.push(line);
-        continue;
-      }
-
-      if (seen.has(trimmed)) {
-        continue;
-      }
-
-      seen.add(trimmed);
-      result.push(trimmed);
-    }
-
-    const data = result.join('\n');
-
-    editorView.dispatch({
-      changes: {
-        from: 0,
-        to: editorView.state.doc.length,
-        insert: data,
-      },
-    });
-  }, [editorView]);
 
   const handleUndoButton = useCallback(() => {
     if (editorView) {
@@ -191,7 +130,7 @@ export const Editor = ({
         extensions={extensions}
       />
 
-      {type !== 'arg' && !readonly && (
+      {!readonly && (
         <Tooltip
           title={t('editor.undo_button')}
           enterTouchDelay={0}
@@ -220,34 +159,6 @@ export const Editor = ({
         </Tooltip>
       )}
 
-      {type === 'list' && !readonly && (
-        <Tooltip
-          title={t('editor.magic_button')}
-          enterTouchDelay={0}
-          placement="bottom"
-        >
-          <IconButton
-            size="small"
-            onClick={handleMagicButton}
-            sx={{
-              position: 'absolute',
-              right: '16pt',
-              top: '4pt',
-              transform: 'translateX(-120%)',
-              opacity: 0.7,
-              color: 'text.secondary',
-              transition: 'color 0.1s ease-in-out, opacity 0.1s ease-in-out',
-              minWidth: 0,
-              '&:hover': {
-                opacity: 1,
-                color: 'primary.main',
-              },
-            }}
-          >
-            <AutoFixHighIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      )}
     </Box>
   );
 };

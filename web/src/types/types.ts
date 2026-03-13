@@ -1,2 +1,2 @@
-export type MainTabsValues = 'settings' | 'lists' | 'logs' | 'scripts';
-export const mainTabsValues = ['settings', 'lists', 'logs', 'scripts'];
+export type MainTabsValues = 'settings';
+export const mainTabsValues = ['settings'];

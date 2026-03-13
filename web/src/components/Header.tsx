@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { useConfig } from '@/config/useConfig';
-import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
-import ChecklistIcon from '@mui/icons-material/Checklist';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import CloudOffIcon from '@mui/icons-material/CloudOff';
 import MenuIcon from '@mui/icons-material/Menu';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ReplayIcon from '@mui/icons-material/Replay';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SaveIcon from '@mui/icons-material/Save';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import {
@@ -20,12 +17,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Link as RouterLink, useParams } from '@tanstack/react-router';
+import { Link as RouterLink } from '@tanstack/react-router';
 
 import { API } from '@/api/client';
 import { type ServiceActionRequest } from '@/api/schema';
 
-import { CurrentVersion } from '@/components/CurrentVersion';
 import { OutputLogDialog } from '@/components/OutputLogDialog';
 import { Trans } from '@/components/Trans';
 
@@ -37,24 +33,17 @@ export const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const { service, nfqws2 } = useStatus();
+  const { service } = useStatus();
 
-  const config = useConfig(nfqws2);
+  const config = useConfig();
 
   const {
     auth,
     needSave,
     onSave,
-    setCheckDomainsList,
-    needReload,
-    setNeedReload,
   } = useAppStore();
 
   const [output, setOutput] = useState<boolean | string>(false);
-
-  const { filename } = useParams({ strict: false }) as {
-    filename?: string;
-  };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -69,13 +58,9 @@ export const Header = () => {
     setOutput(true);
     const { data } = await API.action(command);
     setOutput(
-      `> nfqws2-keenetic ${command}\n${data?.output?.join('\n') || ''}`,
+      `> xkeen -${command}\n${data?.output?.join('\n') || ''}`,
     );
     void API.invalidateStatus();
-
-    if (command === 'upgrade') {
-      setNeedReload(true);
-    }
   };
 
   return (
@@ -175,12 +160,6 @@ export const Header = () => {
                 />
               )}
             </Link>
-            <CurrentVersion
-              sx={{
-                justifyContent: 'flex-end',
-                flexGrow: 500,
-              }}
-            />
           </Stack>
 
           <Stack
@@ -189,20 +168,6 @@ export const Header = () => {
             flexGrow={1}
             justifyContent="flex-end"
           >
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<ChecklistIcon />}
-              color="success"
-              onClick={() =>
-                setCheckDomainsList(
-                  filename?.endsWith('.list') ? filename : 'user.list',
-                )
-              }
-            >
-              <Trans i18nKey="check_domains.button" />
-            </Button>
-
             <Button
               variant="contained"
               size="small"
@@ -265,18 +230,6 @@ export const Header = () => {
                   </MenuItem>
                 )}
 
-                {service && (
-                  <MenuItem
-                    onClick={() => handleMenuClick('reload')}
-                    sx={{ fontSize: 14 }}
-                  >
-                    <ListItemIcon>
-                      <RestartAltIcon />
-                    </ListItemIcon>
-                    <Trans i18nKey="common.reload" />
-                  </MenuItem>
-                )}
-
                 {service ? (
                   <MenuItem
                     onClick={() => handleMenuClick('stop')}
@@ -299,15 +252,6 @@ export const Header = () => {
                   </MenuItem>
                 )}
 
-                <MenuItem
-                  onClick={() => handleMenuClick('upgrade')}
-                  sx={{ fontSize: 14 }}
-                >
-                  <ListItemIcon>
-                    <BrowserUpdatedIcon />
-                  </ListItemIcon>
-                  <Trans i18nKey="common.update" />
-                </MenuItem>
               </Menu>
             </Stack>
           </Stack>
@@ -319,9 +263,6 @@ export const Header = () => {
         open={Boolean(output)}
         onClose={() => {
           setOutput('');
-          if (needReload) {
-            window.location.reload();
-          }
         }}
       />
     </>

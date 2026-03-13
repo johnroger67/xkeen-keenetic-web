@@ -1,30 +1,21 @@
-import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
-import DataObjectIcon from '@mui/icons-material/DataObject';
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useNavigate, useParams } from '@tanstack/react-router';
 
-import { mainTabsValues, type MainTabsValues } from '@/types/types';
+import { type MainTabsValues } from '@/types/types';
 
-import { useStatus } from '@/hooks/useStatus';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export const MainTabs = () => {
   const navigate = useNavigate();
 
   const { t } = useTranslation();
-  const { nfqws2 } = useStatus();
 
   const { tab } = useParams({ strict: false }) as {
     tab?: MainTabsValues;
   };
 
-  const currentTab = !tab
-    ? 'settings'
-    : mainTabsValues.includes(tab)
-      ? tab
-      : false;
+  const currentTab = !tab || tab === 'settings' ? 'settings' : false;
 
   return (
     <>
@@ -39,7 +30,7 @@ export const MainTabs = () => {
         <Tabs
           value={currentTab}
           onChange={(_, value) => {
-            void navigate({ to: value === 'settings' ? '/' : `/${value}` });
+            void navigate({ to: value === 'settings' ? '/settings' : '/' });
           }}
           variant="scrollable"
           scrollButtons="auto"
@@ -66,65 +57,6 @@ export const MainTabs = () => {
               },
             }}
           />
-
-          <Tab
-            key="lists"
-            value="lists"
-            icon={<DescriptionOutlinedIcon fontSize="small" />}
-            iconPosition="start"
-            label={t('tabs.lists')}
-            sx={{
-              minHeight: '50px',
-              fontSize: 14,
-              transition: 'color 0.1s ease-in-out',
-              '&.Mui-selected': {
-                color: 'text.primary',
-              },
-              '&:hover': {
-                color: 'text.primary',
-              },
-            }}
-          />
-
-          <Tab
-            key="logs"
-            value="logs"
-            icon={<ArticleOutlinedIcon fontSize="small" />}
-            iconPosition="start"
-            label={t('tabs.logs')}
-            sx={{
-              minHeight: '50px',
-              fontSize: 14,
-              transition: 'color 0.1s ease-in-out',
-              '&.Mui-selected': {
-                color: 'text.primary',
-              },
-              '&:hover': {
-                color: 'text.primary',
-              },
-            }}
-          />
-
-          {nfqws2 && (
-            <Tab
-              key="scripts"
-              value="scripts"
-              icon={<DataObjectIcon fontSize="small" />}
-              iconPosition="start"
-              label={t('tabs.scripts')}
-              sx={{
-                minHeight: '50px',
-                fontSize: 14,
-                transition: 'color 0.1s ease-in-out',
-                '&.Mui-selected': {
-                  color: 'text.primary',
-                },
-                '&:hover': {
-                  color: 'text.primary',
-                },
-              }}
-            />
-          )}
         </Tabs>
       </Box>
     </>

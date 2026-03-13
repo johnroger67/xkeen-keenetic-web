@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
       ? {
           proxy: {
             '/index.php': {
-              target: 'http://192.168.0.1:90',
+              target: 'http://192.168.0.1:91',
               changeOrigin: true,
             },
           },

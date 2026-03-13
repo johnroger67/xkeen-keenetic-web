@@ -13,8 +13,6 @@ import { useAppStore } from '@/store/useAppStore';
 
 import { useFileNames } from '@/hooks/useFileNames';
 
-import { getFileTypeForTab } from '@/utils/getFileTypeForTab';
-
 export const Route = createFileRoute('/$tab/{-$filename}')({
   component: RouteComponent,
   notFoundComponent: Error404,
@@ -35,7 +33,7 @@ function RouteComponent() {
     findFile,
     isPending: isPendingNames,
     files,
-  } = useFileNames(getFileTypeForTab(tab));
+  } = useFileNames();
 
   const currentFile = !filename
     ? files[0]?.name
@@ -91,13 +89,8 @@ function RouteComponent() {
       {fileInfo && (
         <Editor
           value={originalContent?.content ?? ''}
-          type={fileInfo.type}
-          readonly={
-            isPending ||
-            isPendingNames ||
-            fileInfo?.type === 'log' ||
-            fileInfo?.type === 'lua'
-          }
+          type="json"
+          readonly={isPending || isPendingNames}
           onChange={(value, changed) => {
             setNeedSave(changed);
             setContent(value);

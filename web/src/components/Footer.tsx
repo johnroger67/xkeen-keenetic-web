@@ -48,7 +48,7 @@ export const Footer = () => {
         }}
       >
         <Link
-          href="https://github.com/Anonym-tsk/nfqws-keenetic"
+          href="https://github.com/Corvus-Malus/XKeen"
           target="_blank"
           underline="none"
           color="text.secondary"
@@ -62,43 +62,7 @@ export const Footer = () => {
           }}
         >
           <GitHubIcon sx={{ fontSize: '1.2em' }} />
-          nfqws
-        </Link>
-
-        <Link
-          href="https://github.com/nfqws/nfqws2-keenetic"
-          target="_blank"
-          underline="none"
-          color="text.secondary"
-          sx={{
-            display: 'inline-flex',
-            gap: 0.85,
-            fontSize: 14,
-            '&:hover': {
-              color: 'primary.main',
-            },
-          }}
-        >
-          <GitHubIcon sx={{ fontSize: '1.2em' }} />
-          nfqws2
-        </Link>
-
-        <Link
-          href="https://github.com/nfqws/nfqws-keenetic-web"
-          target="_blank"
-          underline="none"
-          color="text.secondary"
-          sx={{
-            display: 'inline-flex',
-            gap: 0.85,
-            fontSize: 14,
-            '&:hover': {
-              color: 'primary.main',
-            },
-          }}
-        >
-          <GitHubIcon sx={{ fontSize: '1.2em' }} />
-          web
+          XKeen
         </Link>
       </Stack>
 

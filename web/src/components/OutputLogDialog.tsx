@@ -32,7 +32,7 @@ export const OutputLogDialog = ({
           }}
         >
           {typeof content === 'string' ? (
-            <Editor type="log" value={content} readonly={true} />
+            <Editor type="json" value={content} readonly={true} />
           ) : (
             <Box flex={1} sx={{ p: 2, backgroundColor: 'background.default' }}>
               <LinearProgress color="inherit" />

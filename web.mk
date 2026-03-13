@@ -10,14 +10,14 @@ _web-conffiles:
 	fi
 
 _web-control:
-	echo "Package: nfqws-keenetic-web" > out/$(BUILD_DIR)/control/control
+	echo "Package: xkeen-keenetic-web" > out/$(BUILD_DIR)/control/control
 	echo "Version: $(VERSION)" >> out/$(BUILD_DIR)/control/control
 	echo "Depends: php8-cgi, php8-mod-session, php8-mod-curl, lighttpd, lighttpd-mod-cgi, lighttpd-mod-setenv, lighttpd-mod-rewrite, lighttpd-mod-redirect" >> out/$(BUILD_DIR)/control/control
 	echo "License: MIT" >> out/$(BUILD_DIR)/control/control
 	echo "Section: net" >> out/$(BUILD_DIR)/control/control
-	echo "URL: https://github.com/nfqws/nfqws-keenetic-web" >> out/$(BUILD_DIR)/control/control
+	echo "URL: https://github.com/nfqws/xkeen-keenetic-web" >> out/$(BUILD_DIR)/control/control
 	echo "Architecture: all" >> out/$(BUILD_DIR)/control/control
-	echo "Description:  NFQWS2 service web interface" >> out/$(BUILD_DIR)/control/control
+	echo "Description:  XKeen service web interface" >> out/$(BUILD_DIR)/control/control
 	echo "" >> out/$(BUILD_DIR)/control/control
 
 _web-scripts:
@@ -37,13 +37,13 @@ _web-ipk:
 	cd out/$(BUILD_DIR)/control; tar czvf ../control.tar.gz .; cd ../../..
 
 	# data.tar.gz
-	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/nfqws
-	cp -r web/dist/. out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/nfqws
-	#sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/nfqws/index.html
+	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/xkeen
+	cp -r web/dist/. out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/xkeen
+	#sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/xkeen/index.html
 
 	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d
-	cp etc/lighttpd/conf.d/entware.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
-	cp etc/nfqws_web.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/nfqws_web.conf
+	cp etc/lighttpd/conf.d/entware.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-xkeen.conf
+	cp etc/xkeen_web.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/xkeen_web.conf
 	cd out/$(BUILD_DIR)/data; tar czvf ../data.tar.gz .; cd ../../..
 
 	# ipk
@@ -57,18 +57,18 @@ _web-apk:
 	make _web-conffiles
 	make _web-scripts
 
-	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/www/nfqws
-	cp -r web/dist/. out/$(BUILD_DIR)/data$(ROOT_DIR)/www/nfqws
-	#sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/www/nfqws/index.html
+	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/www/xkeen
+	cp -r web/dist/. out/$(BUILD_DIR)/data$(ROOT_DIR)/www/xkeen
+	#sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/www/xkeen/index.html
 
 	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d
-	cp etc/lighttpd/conf.d/openwrt.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
-	cp etc/nfqws_web.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/nfqws_web.conf
+	cp etc/lighttpd/conf.d/openwrt.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-xkeen.conf
+	cp etc/xkeen_web.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/xkeen_web.conf
 
 web-entware:
 	@make \
 		BUILD_DIR=web \
-		FILENAME=nfqws-keenetic-web_$(VERSION)_all_entware.ipk \
+		FILENAME=xkeen-keenetic-web_$(VERSION)_all_entware.ipk \
 		_web-ipk
 
 web-openwrt:
