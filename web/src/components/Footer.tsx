@@ -64,6 +64,23 @@ export const Footer = () => {
           <GitHubIcon sx={{ fontSize: '1.2em' }} />
           XKeen
         </Link>
+        <Link
+          href="https://github.com/johnroger67/xkeen-keenetic-web"
+          target="_blank"
+          underline="none"
+          color="text.secondary"
+          sx={{
+            display: 'inline-flex',
+            gap: 0.85,
+            fontSize: 14,
+            '&:hover': {
+              color: 'primary.main',
+            },
+          }}
+        >
+          <GitHubIcon sx={{ fontSize: '1.2em' }} />
+          Web
+        </Link>
       </Stack>
 
       <Stack
