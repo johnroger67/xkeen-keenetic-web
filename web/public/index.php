@@ -190,10 +190,13 @@ function main(): void
         break;
       }
       exec('pidof ttyd', $pidOut, $pidRet);
-      if ($pidRet !== 0) {
-        exec('ttyd -W -p 7681 sh > /dev/null 2>&1 &');
+      if ($pidRet === 0) {
+        exec('kill ' . implode(' ', $pidOut));
+        sleep(1);
       }
-      $response = array('status' => 0);
+      $token = bin2hex(random_bytes(16));
+      exec("ttyd -W -p 7681 -b /$token sh > /dev/null 2>&1 &");
+      $response = array('status' => 0, 'token' => $token);
       break;
 
     case 'ttydstop':

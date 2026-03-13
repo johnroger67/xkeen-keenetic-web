@@ -16,12 +16,14 @@ const TTYD_PORT = 7681;
 export const TerminalDialog = ({
   open,
   onClose,
+  token,
 }: {
   open: boolean;
   onClose: VoidFunction;
+  token: string;
 }) => {
   const { t } = useTranslation();
-  const ttydUrl = `http://${window.location.hostname}:${TTYD_PORT}`;
+  const ttydUrl = `http://${window.location.hostname}:${TTYD_PORT}/${token}/`;
 
   return (
     <Dialog

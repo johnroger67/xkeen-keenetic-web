@@ -53,6 +53,7 @@ export const Header = () => {
 
   const [output, setOutput] = useState<boolean | string>(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [terminalToken, setTerminalToken] = useState('');
   const [ttydMissing, setTtydMissing] = useState(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -265,7 +266,8 @@ export const Header = () => {
                   onClick={async () => {
                     handleMenuClose();
                     const { data } = await API.startTtyd();
-                    if (data?.status === 0) {
+                    if (data?.status === 0 && data.token) {
+                      setTerminalToken(data.token as string);
                       setTerminalOpen(true);
                     } else {
                       setTtydMissing(true);
@@ -324,6 +326,7 @@ export const Header = () => {
       <TerminalDialog
         open={terminalOpen}
         onClose={() => { setTerminalOpen(false); void API.stopTtyd(); }}
+        token={terminalToken}
       />
 
       <Snackbar
