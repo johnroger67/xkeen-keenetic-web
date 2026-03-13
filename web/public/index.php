@@ -72,17 +72,52 @@ function removeFile(string $filename): bool
 function xkeenServiceStatus(): array
 {
   $output = null;
-  exec('xkeen -status', $output);
-  $running = str_contains($output[0] ?? '', 'запущен');
+  exec('xkeen -status 2>&1', $output);
+  $output = $output ?? [];
+  $clean = array_map(fn($line) => preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', $line), $output);
+  $running = !empty(array_filter($clean, fn($line) => str_contains($line, 'Прокси-клиент запущен')));
   return array('service' => $running, 'status' => 0);
 }
 
 function xkeenServiceAction(string $action): array
 {
-  $output = null;
-  $retval = null;
-  exec("xkeen -$action", $output, $retval);
-  return array('output' => $output, 'status' => $retval);
+  $logFile = '/tmp/xkeen_action.log';
+  @unlink($logFile);
+  exec("xkeen -$action > $logFile 2>&1 &");
+
+  if ($action === 'stop') {
+    sleep(2);
+    $content = file_exists($logFile) ? file_get_contents($logFile) : '';
+    $output = array_values(array_filter(explode("\n", $content), 'trim'));
+    return array('output' => $output ?: ['Прокси-клиент остановлен'], 'status' => 0);
+  }
+
+  $successMarker = 'Прокси-клиент запущен';
+  $failureMarker = 'Failed to start';
+  $result = 'timeout';
+
+  for ($i = 0; $i < 10; $i++) {
+    sleep(1);
+    $raw = file_exists($logFile) ? file_get_contents($logFile) : '';
+    $content = preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', $raw);
+    if (str_contains($content, $successMarker)) { $result = 'success'; break; }
+    if (str_contains($content, $failureMarker)) { $result = 'failure'; break; }
+  }
+
+  $lines = explode("\n", preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', file_exists($logFile) ? file_get_contents($logFile) : ''));
+
+  if ($result === 'success') {
+    $output = [];
+    foreach ($lines as $line) {
+      if (trim($line) === '') continue;
+      $output[] = $line;
+      if (str_contains($line, $successMarker)) break;
+    }
+  } else {
+    $output = array_values(array_filter($lines, 'trim'));
+  }
+
+  return array('output' => $output, 'status' => $result === 'success' ? 0 : 1);
 }
 
 function authenticate($username, $password): bool
@@ -130,7 +165,7 @@ function main(): void
   switch ($_POST['cmd']) {
     case 'status':
       $status = xkeenServiceStatus();
-      $response = array('status' => $status['status'], 'service' => $status['service'], 'nfqws2' => false, 'version' => '', 'anonym' => !$authEnabled);
+      $response = array('status' => $status['status'], 'service' => $status['service'], 'nfqws2' => false, 'anonym' => !$authEnabled);
       break;
 
     case 'filenames':

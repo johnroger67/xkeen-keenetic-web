@@ -10,6 +10,7 @@ import StopCircleIcon from '@mui/icons-material/StopCircle';
 import {
   Box,
   Button,
+  Divider,
   Link,
   ListItemIcon,
   Menu,
@@ -58,7 +59,7 @@ export const Header = () => {
     setOutput(true);
     const { data } = await API.action(command);
     setOutput(
-      `> xkeen -${command}\n${data?.output?.join('\n') || ''}`,
+      `> xkeen -${command}\n${data?.output?.join('\n') || ''}\n\n`,
     );
     void API.invalidateStatus();
   };
@@ -218,6 +219,31 @@ export const Header = () => {
                   },
                 }}
               >
+                <Box
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    fontSize: 13,
+                    color: service ? 'success.main' : 'error.main',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      backgroundColor: service ? 'success.main' : 'error.main',
+                      flexShrink: 0,
+                    }}
+                  />
+                  {service ? 'Запущен' : 'Остановлен'}
+                </Box>
+
+                <Divider />
+
                 {service && (
                   <MenuItem
                     onClick={() => handleMenuClick('restart')}
