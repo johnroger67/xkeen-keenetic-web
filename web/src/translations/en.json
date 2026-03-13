@@ -81,6 +81,10 @@
     "IPV6_ENABLED": "IPv6 enabled",
     "LOG_LEVEL": "Debug logging"
   },
+  "terminal": {
+    "not_installed": "ttyd is not installed. Run on the router:",
+    "title": "Terminal"
+  },
   "editor": {
     "magic_button": "Remove duplicates",
     "undo_button": "Undo",

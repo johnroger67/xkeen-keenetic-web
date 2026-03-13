@@ -184,6 +184,11 @@ function main(): void
       break;
 
     case 'ttyd':
+      exec('which ttyd', $whichOut, $whichRet);
+      if ($whichRet !== 0) {
+        $response = array('status' => 1);
+        break;
+      }
       exec('pidof ttyd', $pidOut, $pidRet);
       if ($pidRet !== 0) {
         exec('ttyd -W -p 7681 sh > /dev/null 2>&1 &');

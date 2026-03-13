@@ -81,6 +81,10 @@
     "IPV6_ENABLED": "IPv6 включён",
     "LOG_LEVEL": "Отладочное логирование"
   },
+  "terminal": {
+    "not_installed": "ttyd не установлен. Для установки выполните на роутере:",
+    "title": "Terminal"
+  },
   "editor": {
     "magic_button": "Удалить дубликаты",
     "undo_button": "Отменить",

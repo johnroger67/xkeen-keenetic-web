@@ -9,6 +9,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import {
+  Alert,
   Box,
   Button,
   Divider,
@@ -16,6 +17,7 @@ import {
   ListItemIcon,
   Menu,
   MenuItem,
+  Snackbar,
   Stack,
   Typography,
 } from '@mui/material';
@@ -28,6 +30,8 @@ import { OutputLogDialog } from '@/components/OutputLogDialog';
 import { TerminalDialog } from '@/components/TerminalDialog';
 import { Trans } from '@/components/Trans';
 
+import { useTranslation } from '@/hooks/useTranslation';
+
 import { useAppStore } from '@/store/useAppStore';
 
 import { useStatus } from '@/hooks/useStatus';
@@ -35,6 +39,7 @@ import { useStatus } from '@/hooks/useStatus';
 export const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const { t } = useTranslation();
 
   const { service } = useStatus();
 
@@ -48,6 +53,7 @@ export const Header = () => {
 
   const [output, setOutput] = useState<boolean | string>(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [ttydMissing, setTtydMissing] = useState(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -256,7 +262,15 @@ export const Header = () => {
                 <Divider />
 
                 <MenuItem
-                  onClick={async () => { handleMenuClose(); await API.startTtyd(); setTerminalOpen(true); }}
+                  onClick={async () => {
+                    handleMenuClose();
+                    const { data } = await API.startTtyd();
+                    if (data?.status === 0) {
+                      setTerminalOpen(true);
+                    } else {
+                      setTtydMissing(true);
+                    }
+                  }}
                   sx={{ fontSize: 14 }}
                 >
                   <ListItemIcon>
@@ -311,6 +325,23 @@ export const Header = () => {
         open={terminalOpen}
         onClose={() => { setTerminalOpen(false); void API.stopTtyd(); }}
       />
+
+      <Snackbar
+        open={ttydMissing}
+        onClose={() => setTtydMissing(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity="warning"
+          onClose={() => setTtydMissing(false)}
+          sx={{ fontFamily: 'monospace', fontSize: 13 }}
+        >
+          {t('terminal.not_installed')}
+          <Box component="code" sx={{ display: 'block', mt: 0.5, fontSize: 12 }}>
+            opkg install ttyd
+          </Box>
+        </Alert>
+      </Snackbar>
 
       <OutputLogDialog
         content={output}
