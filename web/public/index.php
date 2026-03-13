@@ -183,6 +183,22 @@ function main(): void
       $response = xkeenServiceAction($_POST['cmd']);
       break;
 
+    case 'ttyd':
+      exec('pidof ttyd', $pidOut, $pidRet);
+      if ($pidRet !== 0) {
+        exec('ttyd -W -p 7681 sh > /dev/null 2>&1 &');
+      }
+      $response = array('status' => 0);
+      break;
+
+    case 'ttydstop':
+      exec('pidof ttyd', $pidOut, $pidRet);
+      if ($pidRet === 0) {
+        exec('kill ' . implode(' ', $pidOut));
+      }
+      $response = array('status' => 0);
+      break;
+
     case 'actionlog':
       $logFile = '/tmp/xkeen_action.log';
       $raw = file_exists($logFile) ? file_get_contents($logFile) : '';

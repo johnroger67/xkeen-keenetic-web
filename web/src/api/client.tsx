@@ -126,6 +126,16 @@ export const API = {
       RequestFnResponse<LogoutResponse, ApiError>
     >,
 
+  startTtyd: async () =>
+    apiClient.indexPhp.postIndexCmd({ body: { cmd: 'ttyd' as never } }) as Promise<
+      RequestFnResponse<ActionResponse, ApiError>
+    >,
+
+  stopTtyd: async () =>
+    apiClient.indexPhp.postIndexCmd({ body: { cmd: 'ttydstop' as never } }) as Promise<
+      RequestFnResponse<ActionResponse, ApiError>
+    >,
+
   check: async (url: string) =>
     apiClient.indexPhp.postIndexCmd({
       body: { cmd: 'check', url },

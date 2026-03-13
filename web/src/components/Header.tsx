@@ -7,6 +7,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ReplayIcon from '@mui/icons-material/Replay';
 import SaveIcon from '@mui/icons-material/Save';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
+import TerminalIcon from '@mui/icons-material/Terminal';
 import {
   Box,
   Button,
@@ -24,6 +25,7 @@ import { API } from '@/api/client';
 import { type ServiceActionRequest } from '@/api/schema';
 
 import { OutputLogDialog } from '@/components/OutputLogDialog';
+import { TerminalDialog } from '@/components/TerminalDialog';
 import { Trans } from '@/components/Trans';
 
 import { useAppStore } from '@/store/useAppStore';
@@ -45,6 +47,7 @@ export const Header = () => {
   } = useAppStore();
 
   const [output, setOutput] = useState<boolean | string>(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -252,6 +255,18 @@ export const Header = () => {
 
                 <Divider />
 
+                <MenuItem
+                  onClick={async () => { handleMenuClose(); await API.startTtyd(); setTerminalOpen(true); }}
+                  sx={{ fontSize: 14 }}
+                >
+                  <ListItemIcon>
+                    <TerminalIcon />
+                  </ListItemIcon>
+                  Terminal
+                </MenuItem>
+
+                <Divider />
+
                 {service && (
                   <MenuItem
                     onClick={() => handleMenuClick('restart')}
@@ -292,6 +307,11 @@ export const Header = () => {
         </Box>
       </Box>
 
+      <TerminalDialog
+        open={terminalOpen}
+        onClose={() => { setTerminalOpen(false); void API.stopTtyd(); }}
+      />
+
       <OutputLogDialog
         content={output}
         open={Boolean(output)}
@@ -299,6 +319,7 @@ export const Header = () => {
           setOutput('');
         }}
       />
+
     </>
   );
 };
