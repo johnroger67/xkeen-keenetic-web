@@ -122,10 +122,10 @@ function xkeenServiceAction(string $action): array
 
 function authenticate($username, $password): bool
 {
-  $passwdFile = '/etc/passwd';
-  $shadowFile = '/etc/shadow';
+  $shadowFile = file_exists('/opt/etc/shadow') ? '/opt/etc/shadow' : (file_exists('/etc/shadow') ? '/etc/shadow' : null);
+  $passwdFile = file_exists('/opt/etc/passwd') ? '/opt/etc/passwd' : '/etc/passwd';
 
-  $users = file(file_exists($shadowFile) ? $shadowFile : $passwdFile);
+  $users = file($shadowFile ?? $passwdFile);
   $user = preg_grep("/^" . preg_quote($username, '/') . ":/", $users);
 
   if ($user) {
