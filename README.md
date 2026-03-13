@@ -7,6 +7,8 @@
 
 Основан на [nfqws-keenetic-web](https://github.com/nfqws/nfqws-keenetic-web).
 
+<img src='https://raw.githubusercontent.com/johnroger67/xkeen-keenetic-web/master/screenshot.jpg' />
+
 ### Установка на Keenetic и другие системы с Entware
 
 1. Установите необходимые зависимости
