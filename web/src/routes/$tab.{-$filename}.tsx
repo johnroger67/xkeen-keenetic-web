@@ -51,6 +51,7 @@ function RouteComponent() {
   const fileInfo = findFile(currentFile);
 
   const [content, setContent] = useState<string | undefined>();
+  const [uploadedContent, setUploadedContent] = useState<string | undefined>();
   const contentRef = useRef<string | undefined>(undefined);
 
   const onSave = useCallback(async () => {
@@ -67,10 +68,28 @@ function RouteComponent() {
     if (data?.status === 0) {
       void API.invalidateFileContent(currentFile);
       setNeedSave(false);
+      setUploadedContent(undefined);
     } else {
       // TODO: error
     }
   }, [currentFile, needSave, setNeedSave]);
+
+  const handleDownload = useCallback(() => {
+    const text = contentRef.current ?? originalContent?.content ?? '';
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = currentFile || 'file';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [currentFile, originalContent]);
+
+  const handleUpload = useCallback((text: string) => {
+    setUploadedContent(text);
+    setContent(text);
+    setNeedSave(true);
+  }, [setNeedSave]);
 
   useEffect(() => {
     contentRef.current = content;
@@ -78,6 +97,7 @@ function RouteComponent() {
 
   useEffect(() => {
     setNeedSave(false);
+    setUploadedContent(undefined);
   }, [currentFile, setNeedSave, tab]);
 
   useEffect(() => {
@@ -88,7 +108,7 @@ function RouteComponent() {
     <App>
       {fileInfo && (
         <Editor
-          value={originalContent?.content ?? ''}
+          value={uploadedContent ?? originalContent?.content ?? ''}
           type="json"
           readonly={isPending || isPendingNames}
           onChange={(value, changed) => {
@@ -96,6 +116,8 @@ function RouteComponent() {
             setContent(value);
           }}
           onSave={onSave}
+          onDownload={handleDownload}
+          onUpload={handleUpload}
           sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
         />
       )}

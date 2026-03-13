@@ -83,6 +83,8 @@
   },
   "editor": {
     "magic_button": "Удалить дубликаты",
-    "undo_button": "Отменить"
+    "undo_button": "Отменить",
+    "download_button": "Скачать файл",
+    "upload_button": "Загрузить файл"
   }
 }

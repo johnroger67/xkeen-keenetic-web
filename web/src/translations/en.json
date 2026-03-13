@@ -83,6 +83,8 @@
   },
   "editor": {
     "magic_button": "Remove duplicates",
-    "undo_button": "Undo"
+    "undo_button": "Undo",
+    "download_button": "Download file",
+    "upload_button": "Upload file"
   }
 }

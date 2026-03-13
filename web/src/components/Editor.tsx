@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { history, undo } from '@codemirror/commands';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { history, undo, undoDepth } from '@codemirror/commands';
 import { json } from '@codemirror/lang-json';
 import { Compartment } from '@codemirror/state';
 import { keymap, type EditorView } from '@codemirror/view';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import UndoIcon from '@mui/icons-material/Undo';
 import { Box, IconButton, Tooltip, useTheme } from '@mui/material';
 import { type SxProps } from '@mui/system/styleFunctionSx';
@@ -18,6 +20,8 @@ interface EditorProps {
   value: string;
   onChange?: (value: string, changed: boolean) => void;
   onSave?: () => void;
+  onDownload?: () => void;
+  onUpload?: (content: string) => void;
   readonly?: boolean;
   autoFocus?: boolean;
   maxHeight?: number | string;
@@ -29,6 +33,8 @@ export const Editor = ({
   value,
   onChange,
   onSave,
+  onDownload,
+  onUpload,
   readonly = false,
   autoFocus = false,
   maxHeight = 'auto',
@@ -39,7 +45,26 @@ export const Editor = ({
   const { t } = useTranslation();
 
   const [editorView, setEditorView] = useState<EditorView | null>(null);
-  const [changed, setChanged] = useState(false);
+  const [undoAvailable, setUndoAvailable] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result;
+      if (typeof content === 'string') {
+        onUpload?.(content);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
 
   const extensions = useMemo(() => {
     const result = [historyCompartment.of([])];
@@ -78,6 +103,7 @@ export const Editor = ({
     editorView?.dispatch({
       effects: historyCompartment.reconfigure([history()]),
     });
+    setUndoAvailable(false);
   }, [value, editorView]);
 
   return (
@@ -117,8 +143,8 @@ export const Editor = ({
         readOnly={readonly}
         editable={!readonly}
         onCreateEditor={(view) => setEditorView(view)}
-        onChange={(newValue) => {
-          setChanged(value !== newValue);
+        onChange={(newValue, viewUpdate) => {
+          setUndoAvailable(undoDepth(viewUpdate.state) > 0);
           onChange?.(newValue, value !== newValue);
         }}
         basicSetup={{
@@ -131,32 +157,83 @@ export const Editor = ({
       />
 
       {!readonly && (
-        <Tooltip
-          title={t('editor.undo_button')}
-          enterTouchDelay={0}
-          placement="bottom"
+        <Box
+          sx={{
+            position: 'absolute',
+            right: '8pt',
+            bottom: '8pt',
+            display: 'flex',
+            gap: 0.5,
+          }}
         >
-          <IconButton
-            size="small"
-            onClick={handleUndoButton}
-            disabled={!changed}
-            sx={{
-              position: 'absolute',
-              right: '16pt',
-              top: '4pt',
-              opacity: 0.7,
-              color: 'text.secondary',
-              transition: 'color 0.1s ease-in-out, opacity 0.1s ease-in-out',
-              minWidth: 0,
-              '&:hover': {
-                opacity: 1,
-                color: 'primary.main',
-              },
-            }}
+          {onDownload && (
+            <Tooltip title={t('editor.download_button')} enterTouchDelay={0} placement="bottom">
+              <IconButton
+                size="small"
+                onClick={onDownload}
+                sx={{
+                  opacity: 0.7,
+                  color: 'text.secondary',
+                  transition: 'color 0.1s ease-in-out, opacity 0.1s ease-in-out',
+                  minWidth: 0,
+                  '&:hover': { opacity: 1, color: 'primary.main' },
+                }}
+              >
+                <FileDownloadIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {onUpload && (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+              <Tooltip title={t('editor.upload_button')} enterTouchDelay={0} placement="bottom">
+                <IconButton
+                  size="small"
+                  onClick={handleUploadClick}
+                  sx={{
+                    opacity: 0.7,
+                    color: 'text.secondary',
+                    transition: 'color 0.1s ease-in-out, opacity 0.1s ease-in-out',
+                    minWidth: 0,
+                    '&:hover': { opacity: 1, color: 'primary.main' },
+                  }}
+                >
+                  <FileUploadIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
+
+          <Tooltip
+            title={t('editor.undo_button')}
+            enterTouchDelay={0}
+            placement="bottom"
           >
-            <UndoIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+            <IconButton
+              size="small"
+              onClick={handleUndoButton}
+              disabled={!undoAvailable}
+              sx={{
+                opacity: 0.7,
+                color: 'text.secondary',
+                transition: 'color 0.1s ease-in-out, opacity 0.1s ease-in-out',
+                minWidth: 0,
+                '&:hover': {
+                  opacity: 1,
+                  color: 'primary.main',
+                },
+              }}
+            >
+              <UndoIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
       )}
 
     </Box>
