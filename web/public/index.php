@@ -98,6 +98,10 @@ function xkeenServiceAction(string $action): array
     if ($retval === 0) { $result = 'success'; break; }
   }
 
+  if ($result === 'success') {
+    sleep(5);
+  }
+
   $raw = file_exists($logFile) ? file_get_contents($logFile) : '';
   $lines = explode("\n", preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', $raw));
   $output = array_values(array_filter($lines, 'trim'));
@@ -177,6 +181,13 @@ function main(): void
     case 'stop':
     case 'start':
       $response = xkeenServiceAction($_POST['cmd']);
+      break;
+
+    case 'actionlog':
+      $logFile = '/tmp/xkeen_action.log';
+      $raw = file_exists($logFile) ? file_get_contents($logFile) : '';
+      $lines = explode("\n", preg_replace('/\x1B\[[0-9;]*[a-zA-Z]/', '', $raw));
+      $response = array('status' => 0, 'output' => array_values(array_filter($lines, 'trim')));
       break;
 
     case 'login':

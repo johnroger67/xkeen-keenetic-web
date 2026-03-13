@@ -58,10 +58,18 @@ export const Header = () => {
     handleMenuClose();
     setOutput(true);
     const { data } = await API.action(command);
-    setOutput(
-      `> xkeen -${command}\n${data?.output?.join('\n') || ''}\n\n`,
-    );
+    const formatOutput = (lines: string[] | undefined) =>
+      `> xkeen -${command}\n${lines?.join('\n') || ''}\n\n`;
+    setOutput(formatOutput(data?.output));
     void API.invalidateStatus();
+
+    if (command === 'start' || command === 'restart') {
+      for (let i = 0; i < 5; i++) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const { data: logData } = await API.actionLog();
+        setOutput(formatOutput(logData?.output));
+      }
+    }
   };
 
   return (

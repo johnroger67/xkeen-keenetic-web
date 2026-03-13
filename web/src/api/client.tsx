@@ -111,6 +111,11 @@ export const API = {
       RequestFnResponse<ActionResponse, ApiError>
     >,
 
+  actionLog: async () =>
+    apiClient.indexPhp.postIndexCmd({ body: { cmd: 'actionlog' as never } }) as Promise<
+      RequestFnResponse<ActionResponse, ApiError>
+    >,
+
   login: async (user: string, password: string) =>
     apiClient.indexPhp.postIndexCmd({
       body: { cmd: 'login', user, password },
